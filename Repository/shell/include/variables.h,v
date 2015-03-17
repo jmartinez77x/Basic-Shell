@@ -1,0 +1,62 @@
+head	7.3;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+7.3
+date	2014.05.19.04.10.59;	author parallels;	state Exp;
+branches;
+next	7.1;
+commitid	10053798452137649CC;
+
+7.1
+date	2014.05.02.04.56.11;	author parallels;	state Exp;
+branches;
+next	6.1;
+commitid	1005363256B2C77085D;
+
+6.1
+date	2014.04.29.04.31.29;	author parallels;	state Exp;
+branches;
+next	;
+commitid	100535F2B2143F8CAA8;
+
+
+desc
+@@
+
+
+7.3
+log
+@Almost Done
+@
+text
+@//Programmer's name: Joe Martinez
+//variables.h holds the functions of variables.c
+
+#include "hash_table.h"
+
+extern struct Table *t;
+
+void  readCMD(char *input);
+void  equalCMD(char *input);
+char* callVarCMD(char *input);@
+
+
+7.1
+log
+@Not done
+@
+text
+@@
+
+
+6.1
+log
+@recommit
+@
+text
+@@
+

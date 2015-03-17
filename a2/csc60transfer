@@ -1,0 +1,74 @@
+#!/bin/bash
+clear
+
+#The purpose of this script is to easily download and backup the CSC60 subdirectory and tar files
+#Created by Joe Martinez 
+
+account=martinj
+remoteSystem=athena.ecs.csus.edu 
+lastName=Martinez
+firstName=Joe
+
+echo "Enter your selection"
+echo 
+echo "1) Download CSC60 subdirectory from athena.ecs.csus.edu to your local linux"
+echo "2) Backup CSC60 subdirectory to athena.ecs.csus.edu from your local linux"
+echo "3) Download CSC60 tar file from athena.ecs.csus.edu to your local linux"
+echo "4) Backup CSC60 tar file to athena.ecs.csus.edu from your local linux"
+echo "5) Create CSC60 assignment tar file on your local linux"
+echo "6) Exit"
+echo
+
+read i
+case $i in
+
+	1)echo "Which subdirectory of CSC60 would you like to download from $account@$remoteSystem? ex: a1, a2, a3... "
+	  read DIRVAR_1
+	  scp -r $account@$remoteSystem:CSC60/$DIRVAR_1 ~/CSC60/
+	  echo
+	  echo "File transferred to local directory!"
+		#copy remote CSC60 subdirectory to local CSC60 directory
+	;;
+	2)echo "Which subdirectory of CSC60 would you like to backup to $account@$remoteSystem? ex: a1, a2, a3... "
+	  read DIRVAR_2
+	  scp -r ~/CSC60/$DIRVAR_2 $account@$remoteSystem:CSC60 
+	  echo
+	  echo "Local subdirectory backed to $account@$remoteSystem!"
+		#copy local CSC60 subdirectory to remote CSC60 directory
+	;;
+	3)echo "Which tar file would you like to download from $account@$remoteSystem? ex: a1, a2, a3... "
+	  read TARVAR_1
+	  scp -r $account@$remoteSystem:tars/${lastName}_${firstName}_$TARVAR_1.tar.z ~/tars/
+	  echo 
+	  echo "tars file transferred to local directory!"
+		#copy remote tars file to local tars directory 
+	;;
+	4)echo "Which tar file would you like to backup to $account@$remoteSystem? ex: a1, a2, a3... "
+	  read TARVAR_2
+	  scp -r ~/tars/${lastName}_${firstName}_$TARVAR_2.tar.z $account@$remoteSystem:tars/ 
+	  echo
+	  echo "Tar file backed to $account@$remoteSystem!"
+		#
+	;;
+	5)echo "Which subdirectory would you like to create a tar file from? ex: a1, a2, a3... " 
+	  read TARVAR_3
+	  cd ; tar czf tars/${lastName}_${firstName}_$TARVAR_3.tar.z CSC60  
+	  echo 
+	  echo "Local tar file created!"
+		#create local tar named after lastName-firstName-TARVAR_3(assignment number)   
+	;;
+	6)echo "Goodbye!" 
+	  exit
+		# exit
+	;;
+	
+	esac 
+
+
+#for this to work in any directory:
+	#header has to say #!/bin/bash
+	#there must be no file type in the name 
+	#you must make the file executable using "chmod 755 file_name"
+	#add PATH=$PATH:~/CSC60/a2 to end of /.bashrc file 
+	#reset .bashrc file with source ~/.bashrc (source ~/.bashrc)
+	#test by typing on the file name with no extension....hopefully it works 

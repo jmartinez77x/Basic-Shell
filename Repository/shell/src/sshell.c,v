@@ -1,0 +1,584 @@
+head	7.3;
+access;
+symbols
+	CSC60:1.1.1.1 ECS:1.1.1;
+locks; strict;
+comment	@ * @;
+
+
+7.3
+date	2014.05.19.04.10.59;	author parallels;	state Exp;
+branches;
+next	7.1;
+commitid	10053798452137649CC;
+
+7.1
+date	2014.05.02.04.56.11;	author parallels;	state Exp;
+branches;
+next	6.1;
+commitid	1005363256B2C77085D;
+
+6.1
+date	2014.04.18.05.13.34;	author parallels;	state Exp;
+branches;
+next	5.1;
+commitid	1005350B47E1D525B15;
+
+5.1
+date	2014.04.01.01.11.12;	author parallels;	state Exp;
+branches;
+next	4.1;
+commitid	100533A12300C819CE3;
+
+4.1
+date	2014.03.09.06.00.52;	author parallels;	state Exp;
+branches;
+next	3.1;
+commitid	100531C03943D68B573;
+
+3.1
+date	2014.03.09.05.17.57;	author parallels;	state Exp;
+branches;
+next	2.3;
+commitid	100531BF9853ADF9391;
+
+2.3
+date	2014.03.09.04.06.12;	author parallels;	state Exp;
+branches;
+next	2.2;
+commitid	100531BE8B43694BC96;
+
+2.2
+date	2014.03.09.03.38.27;	author parallels;	state Exp;
+branches;
+next	2.1;
+commitid	100531BE23309CD4A3E;
+
+2.1
+date	2014.03.06.23.42.32;	author martinj;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2014.03.06.23.38.34;	author martinj;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2014.03.06.23.38.34;	author martinj;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+7.3
+log
+@Almost Done
+@
+text
+@/***************************************************
+  Programmer's name: Joe Martinez
+  FileName: sshell.c
+  Purpose: Execute all unix shell commands through the executable file.
+  Description: Ties in all the individual pieces of the shell utility
+        that we are creating.
+***************************************************/
+
+#include "parser.h"
+#include "shell.h"
+#include "hash_table.h"
+#include "variables.h"
+#include "shell_history.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>   
+#include <unistd.h>  
+#include <signal.h>
+
+struct Table *t;    //CREATE TABLE
+
+int main(void) {
+  char input[MAXINPUTLINE];
+  signal_c_init();
+
+  printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+  printf("Welcome to the sample shell!  You may enter commands here, one\n");
+  printf("per line.  When you're finished, press Ctrl+D on a line by\n");
+  printf("itself.  I understand basic commands and arguments separated by\n");
+  printf("spaces, redirection with < and >, up to two commands joined\n");
+  printf("by a pipe, tilde expansion, and background commands with &.\n\n"); 
+  
+  printf("\njmsh$ ");
+
+
+  /**********************BEGIN MEAT OF PROGRAM********************************/
+
+  t = Table_create();   //CREATING TABLE
+
+  FILE *shistory;
+  shistory = fopen(".simpleshell_history", "w"); //CREATE HISTORY FILE TO WRITE
+  int i = 1;                                     //NUMERICAL MARKER FOR HISTORY FILE
+
+  while (fgets(input, sizeof(input), stdin)) {   //KEEPS IT RUNNING, FUNCTIONS WILL BE HERE 
+   
+    //RECORD EACH COMMAND INTO SIMPLESHELL_HISTORY
+    //recHistory(input, i, shistory);
+    char c[16];
+    sprintf(c,"%d ", i);    //C IS A CHAR STRING WITH I AS A NUMERICAL MARK
+    i += 1;
+    fputs(c, shistory);     //PUTS C INTO .SIMPLESHELL_HISTORY
+    fputs(input, shistory); //PUTS INPUT (THE COMMAND) INTO .SIMPLESHELL_HISTORY
+    //END RECORDING
+
+
+    //SHOW HISTORY FROM SIMPLESHELL_HISTORY
+    char h[16];                                      //BUFFER FOR READING HISTORY FILE
+    char hstr[16] = "history\n";
+    if(strcmp(input,hstr) == 0){                     //CHECK IF INPUT IS THE HISTORY COMMAND
+      fclose(shistory);
+      shistory = fopen(".simpleshell_history", "r"); //OPEN FILE TO READ
+      while(fgets(h,16,shistory) !=  NULL){          //GETS INPUT FROM HISTORY FILE
+        fputs(h, stdout);                            //OUTPUTS HISTORY TO CONSOLE
+      }
+      fclose(shistory);
+      shistory = fopen(".simpleshell_history", "a"); //REOPEN FILE TO APPEND
+    }//END SHOW HISTORY
+
+
+    //CMD BEGINS WITH "!"
+    if(strncmp(input, "!",1) == 0){                  //IF FIRST CHAR IS "!"
+      fclose(shistory);
+      shistory = fopen(".simpleshell_history", "r"); //OPEN HISTORY FILE TO READ
+      
+      char d[16];                                    //SEARCH HISTORY FILE BUFFER
+      
+      while(fgets(d,16,shistory) !=  NULL){          //FIND FIRST INSTANCE OF NUMBER(FROM !NUMBER COMMAND)
+        
+        // !NUMBER
+        char *delim; 
+        delim = strtok(input, "!");   //GET STRING AFTER "!" (THE ACUTAL COMMAND)
+        if(strncmp(d, delim,1) == 0){ //IF BUFFER == COMMAND STRING 
+          strcpy(input,d+2);          //INPUT == COMMAND STRING FROM READ FILE
+        }
+        //END !NUMBER
+
+
+        // !STRING
+        //COMPARES THE CMD OF EACH LINE IN HISOTRY FILE AND SETS THE LAST ONE TO INPUT
+        if(strncmp(d+2,delim,sizeof(delim)/2) == 0){ 
+          strcpy(input,d+2);
+        }
+        //END !STRING
+
+
+        //CMD = !!
+        if(strncmp(input,"!!",2) == 0){ //IF INPUT == "!!"
+          char l[16];
+          int k = i-2;
+          sprintf(l,"%d ",k);           //MAKE STRING OF I-2 WHICH IS LAST EXECUTED CMD
+          if(strncmp(d,l,1) == 0){
+            strcpy(input,d+2);          //SET INPUT TO THAT CMD
+          } 
+        }
+        //END CMD == !!
+
+
+      }//END SEARCHING HISTORY FILE TO RECALL CMD
+
+      fclose(shistory);
+      shistory = fopen(".simpleshell_history", "a"); //OPEN HISTORY FILE TO APPNED FOR NEW CMD(S)
+
+    }//END CMD BEGINS WITH "!"
+
+
+    //BEGIN DEALING WITH VARIABLES
+    if(strncmp(input, "read", 4) == 0){     //IF INPUT HAS "READ" (TO SET A VARIABLE)
+      readCMD(input);
+    }
+
+    if(strchr(input, '=') != NULL){         //IF INPUT HAS AN "=" (TO SET A VARIABLE)   
+      equalCMD(input);
+    }
+
+    if(strchr(input, '$') != NULL){         //IF INPUT HAS AN "$" (TO CALL A VARIABLE)
+      callVarCMD(input);
+    }
+    //END DEALING WITH VARIABLES
+
+
+    //BEGIN KEY LOGGING
+    if(strncmp(input, "key_logger_off", 14) == 0){
+      printf("%s\n", "Stopped key logging");
+      //append temp file to permanent one
+      //atexit(do this same command to save key log to file)
+      printf("%s\n", "Would you like to append temporary file to permanent file?");
+      printf("%s\n", "Enter Y/N");
+      char ans[4];
+      fgets(ans, sizeof(ans), stdin);
+      if(strcmp(ans, "y")==0 | strcmp(ans, "Y")==0){
+        //append file
+        printf("%s\n", "File appended");
+      }
+      else{
+        printf("%s\n", "File not appended");
+        //exit(1);
+      }
+    }
+
+
+    if(strncmp(input, "key_logger", 10) == 0){
+      printf("%s\n", "Started key Logging");
+
+      int status;
+      int pid;
+      int p[2];
+
+      if(pipe(p) == -1){
+        printf("%s\n", "Pipe failed");
+        exit(1);
+      }
+
+      pid = fork();
+      if(pid == -1){
+        printf("%s\n", "Fork failed");
+        exit(2);
+      }
+      if(pid == 0){ //CHILD PROCESS
+        close(p[1]);
+        //dup2(p[0], 0);
+        close(p[0]);
+        printf("%s\n", "In child process");
+        execl("record", "record", input, NULL);    //WILL SUCCESFULY EXECUTE ./RECORD
+        write(p[1], input, sizeof(input));
+        exit(3);
+      }
+      else{ //PARENT PROCESS
+        close(p[0]);
+        dup2(p[1],1);
+        close(p[1]);
+        //printf("%s\n", "fork error");
+        //write()
+        wait(&status);
+        exit(4);
+      }
+    }
+
+    //reading for ctrl-c and ctrl-d
+    //END KEY LOGGING
+
+
+    //SENDING INPUT TO BE EXECUTED
+    stripcrlf(input);
+    parse(input);
+    printf("\njmsh$ ");
+    //END SEND INPUT
+  }
+  fclose(shistory); //CLOSE .SIMPLESHELL_HISTORY (REFRESHED WHEN SHELL IS REOPENED)
+  return 0;
+}@
+
+
+7.1
+log
+@Not done
+@
+text
+@d2 4
+a5 4
+	Programmer's name: Joe Martinez
+	FileName: sshell.c
+	Purpose: Execute all unix shell commands through the executable file.
+	Description: Ties in all the individual pieces of the shell utility
+a7 3
+//#include "shell_history.h"
+//#include "variables.h"
+//#include "hash_table.h" 
+d16 3
+a18 4
+#include <string.h>  
+#include <sys/types.h>
+#include <sys/wait.h>  
+#include <unistd.h> 
+a23 1
+  
+a37 2
+  //TABLE STUFF
+  //struct Table *t;    //CREATING TABLE
+a38 6
+  
+  // char testing[8];
+  // strcpy(testing, "Joe");
+  // Table_add(testing, "Martinez");                                    //TABLE ADD WORKS FROM MAIN
+  // printf("\nTEST Main TS return = %s\n", Table_search(testing));  //TABLE SEARCH WORKS FROM MAIN
+  //END TABLE STUFF
+d117 1
+a117 3
+
+    //IF INPUT HAS "READ" (TO SET A VARIABLE)
+    if(strncmp(input, "read", 4) == 0){
+a118 1
+      strcpy(input, "echo ");
+d121 1
+a121 2
+    //IF INPUT HAS AN "=" (TO SET A VARIABLE)
+    if(strchr(input, '=') != NULL){     
+a122 1
+      strcpy(input, "echo ");
+d125 2
+a126 8
+    //IF INPUT HAS AN "$" (TO CALL A VARIABLE)
+    if(strchr(input, '$') != NULL){ 
+      const char callVar;
+      //strcpy(callVar, callVarCMD(input));
+      //printf("callVar = %s\n", callVar);
+      //printf("$ if loop return: %s\n", Table_search("Joe"));
+      strcpy(input, "echo ");
+      strcat(input, Table_search("Joe"));
+d132 19
+d154 3
+a157 2
+      int status;
+      int pid, p[2];
+d159 1
+d162 1
+d164 5
+a168 1
+      if(pid == 0){
+d170 1
+a170 1
+        dup2(p[0], 0);
+d172 4
+a175 6
+        FILE *tempRecord;
+        tempRecord = fopen(".temp_logger", "w");
+        //fgets(,stdin);
+        fputs(stdin, tempRecord);
+        fclose(tempRecord);
+        //execlp("record", "ls", input, NULL);
+d177 1
+a177 1
+      else{
+d181 2
+a182 1
+        printf("%s\n", "error");
+d184 1
+a185 25
+      
+
+      // int status;
+      // int pid = fork();
+      // if(pid == -1){
+      //   printf("%s\n", "Fork Failed");
+      // }
+      // else if(pid ==0){
+      //   execlp("./record", input, NULL);
+      //   printf("%s\n", "Fork Successful");
+      // }
+      // else{
+      //   pid = wait(&status);
+      // }
+
+
+      //dup() or dup2() and execlp() or execvp()
+      //create child process that starts record.c
+      //continually push input to child process
+    }
+
+    if(strcmp(input, "key_logger_off") == 0){
+      printf("%s\n", "Stopped key logging");
+      //append temp file to permanent one
+      //atexit(do this same command to save key log to file)
+d200 1
+a200 1
+}
+@
+
+
+6.1
+log
+@Search not working
+@
+text
+@d19 4
+a22 1
+#include <string.h>     
+d155 60
+@
+
+
+5.1
+log
+@History Functions
+@
+text
+@d8 4
+d14 3
+d18 5
+a22 1
+#include <string.h>
+d37 13
+d51 2
+a52 2
+  shistory = fopen(".simpleshell_history", "w");
+  int i = 1;
+d54 1
+a54 1
+  while (fgets(input, sizeof(input), stdin)) {
+d56 2
+a57 1
+    //record each command into simpleshell_history
+d59 1
+a59 1
+    sprintf(c,"%d ", i);    //c is a char string with i as a numerical marker
+d61 3
+a63 3
+    fputs(c, shistory);     //puts c into .simpleshell_history
+    fputs(input, shistory); //puts input (the command) into .simpleshell_history
+    //end recording
+d66 2
+a67 2
+    //show history from simpleshell_history
+    char h[16];                   //buffer for reading history file
+d69 1
+a69 1
+    if(strcmp(input,hstr) == 0){  //check if input is the history command
+d71 3
+a73 3
+      shistory = fopen(".simpleshell_history", "r"); //open file to read
+      while(fgets(h,16,shistory) !=  NULL){          //gets input from history file
+        fputs(h, stdout);         //outputs history to console
+d76 2
+a77 2
+      shistory = fopen(".simpleshell_history", "a"); //reopen file to append
+    }//end show history
+d80 2
+a81 2
+    //cmd begins with "!"
+    if(strncmp(input, "!",1) == 0){ //if first char is "!"
+d83 1
+a83 1
+      shistory = fopen(".simpleshell_history", "r"); //open history file to read
+d85 1
+a85 1
+      char d[16]; //search history file buffer
+d87 1
+a87 1
+      while(fgets(d,16,shistory) !=  NULL){ //find first instance of number (from !number command)
+d89 1
+a89 1
+        // !number
+d91 3
+a93 3
+        delim = strtok(input, "!");   //get string after "!" (command string)
+        if(strncmp(d, delim,1) == 0){ //if buffer == command string
+          strcpy(input,d+2);          //input == command string from read file 
+d95 1
+a95 1
+        //end !number
+d98 2
+a99 2
+        // !string
+        //compares the cmd of each line in history file and sets the last one to input
+d103 1
+a103 1
+        //end !string
+d106 2
+a107 2
+        // cmd = !!
+        if(strncmp(input,"!!",2) == 0){ //if input == "!!"
+d110 1
+a110 1
+          sprintf(l,"%d ",k);           //make string of i-2 which is last executed cmd
+d112 2
+a113 2
+            strcpy(input,d+2);          //set input to that cmd
+          }    
+d115 4
+a118 2
+        //end cmd = !!
+      }//end while loop (end of history file)
+d121 29
+a149 1
+      shistory = fopen(".simpleshell_history", "a"); //ophen history file to append
+a150 1
+    } //end cmd begins with "!"
+d152 1
+d156 1
+d158 1
+a158 1
+  fclose(shistory);
+@
+
+
+4.1
+log
+@finished assignment 3
+@
+text
+@d11 1
+d17 1
+d22 1
+a22 1
+  printf("by a pipe, tilde expansion, and background commands with &.\n\n");
+d26 4
+d31 67
+d102 1
+@
+
+
+3.1
+log
+@new .a files in lib directory
+@
+text
+@@
+
+
+2.3
+log
+@jmsh?
+@
+text
+@@
+
+
+2.2
+log
+@jmsh edit
+@
+text
+@d22 1
+a22 1
+  printf("\n$ ");
+d27 1
+a27 1
+    printf("\n$ ");
+@
+
+
+2.1
+log
+@Log message
+@
+text
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@@
+
+
+1.1.1.1
+log
+@First import
+@
+text
+@@

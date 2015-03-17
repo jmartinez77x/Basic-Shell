@@ -1,0 +1,43 @@
+*******HW 6 Notes*******
+
+1) External command called "record" 
+	when called: records day/time stamp of any command line you type
+	text file name will be a parameter when calling record command
+	each new line will start with a time stamp (time() or ctime()
+	then input will be recorded to the text file
+
+	record will stop with "ctrl-d" 
+	the executable file for "record" will be placed in newly added "bin" subdirectory in "shell" project
+			("cvs add" to add "bin" subdirectory to repository)
+	modify "makefile" to put executable file "record" in "bin" file
+	"record.c" will be in src subdirectory
+
+	add "~/csc60/a6/shell/bin to "PATH" variable in ".bashrc" file 
+		source it with "~/.bashrc" 
+	copy .bashrc to "a6" directory for grading
+
+2)Key-logging
+	internal command named "key_logger"
+	dedicate pipe. 
+	should be in main function: key-logging of command line by sending them through the pipe to child process running "record" code
+	then send input to parse() as normal
+
+	a) when "key_logger" is typed a child process will be created and commands typed from keyboard will be passed to child process through a pipe
+	   child process in executable "record" file in bin subdirectory
+	   "record" will be reading commands from stdin so use dup() or dup2() and execlp() or execvp() 
+	   pass name of temporary key logging file, ".temp_logger" to child process through exec(). 
+	   permanent key-loggin file will be called ".logfile" in shell directory
+
+	b) when "key_logger_off" is input the logging will stop
+	   ".temp_logger" will be appended to permanent ".logfile"
+	   delete temp file
+	   OR when shell is shut down, use atexit()
+	   ".logfile" will be in simpleshell sessions, not in cvs
+
+	c) handle "SIGINT" signal
+	   ctrl-C will prompt an option to append temp_logger to perm or not
+		if yes..append file
+		if no...delete temp and exit simpleshell
+	
+Modify makefile, test. 
+Make clean, copy .bashrc to a6, commit as 7.1, tar, submit 

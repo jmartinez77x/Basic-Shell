@@ -1,0 +1,172 @@
+head	7.3;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+7.3
+date	2014.05.19.04.10.59;	author parallels;	state Exp;
+branches;
+next	7.1;
+commitid	10053798452137649CC;
+
+7.1
+date	2014.05.02.04.56.11;	author parallels;	state Exp;
+branches;
+next	6.1;
+commitid	1005363256B2C77085D;
+
+6.1
+date	2014.04.29.04.31.29;	author parallels;	state Exp;
+branches;
+next	;
+commitid	100535F2B2143F8CAA8;
+
+
+desc
+@@
+
+
+7.3
+log
+@Almost Done
+@
+text
+@//Programmer's name: Joe Martinez
+//Variable.c contains functions to handle variables entered in simpleshell
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include "hash_table.h"
+#include "shell.h"
+
+extern struct Table *t;
+
+//IF INPUT HAS "READ" (TO SET A VARIABLE)
+void readCMD(char *input){
+	char varName[16];
+	char varValue[16];
+	char *readCMD_buf;
+
+	readCMD_buf = strtok(input, " ");
+	while(readCMD_buf != NULL){
+		strcpy(varName, readCMD_buf);			//EXTRACT VARIABLE NAME FROM INPUT
+		readCMD_buf = strtok(NULL, " ");
+	}
+	fgets(varValue, sizeof(input), stdin);		//GET VALUE FOR VARIABLE VIA FGETS
+
+	printf("TEST readCMD varName = %s\n", varName);
+	printf("TEST readCMD varValue = %s\n", varValue);
+
+	Table_add(varName, varValue);				//ADD TO TABLE
+}
+
+
+//IF INPUT HAS AN "=" (TO SET A VARIABLE)
+void equalCMD(char *input){
+    char varName[16];
+    char varValue[16];
+
+    char *equalCMD_buf;
+    equalCMD_buf = strtok(input, "=");	
+    strcpy(varName, equalCMD_buf);				//EXTRACT VARIABLE NAME FROM INPUT
+    while(equalCMD_buf != NULL){
+    	strcpy(varValue, equalCMD_buf);			//EXTRACT VARIABLE VALUE FROM INPUT
+    	equalCMD_buf = strtok(NULL, "\n");
+    }
+
+    printf("TEST equalCMD varName = %s\n", varName);
+    printf("TEST equalCMD varValue = %s\n", varValue);
+    
+    Table_add(varName, varValue);				//ADD TO TABLE
+}
+
+
+//IF INPUT HAS AN "$" (TO CALL A VARIABLE)
+const char* callVarCMD(char *input){
+	char varName[16];
+	char *buf;
+	buf = strtok(input, " ");
+	while(buf != NULL){
+		if(strncmp(buf, "$", 1) == 0){
+			strcpy(varName, buf+1);				//EXTRACT VARIABLE NAME FROM INPUT
+		}
+		buf = strtok(NULL, " ");
+	}
+
+
+	//TESTING STUFF
+ 	// printf("varName = %s\n", varName);
+ 	// char nname[8];
+ 	// strcpy(nname, varName);
+ 	// char vvalue[8];
+ 	// strcpy(vvalue, varName);
+ 	// Table_add(nname, vvalue);                                    				
+ 	// printf("\nTEST callVarCMD received (nname) = %s\n", Table_search(nname));
+	//END TESTING STUFF
+
+
+	printf("callVarCMD received (varName) = %s\n", Table_search(varName));
+	return varName;
+}
+@
+
+
+7.1
+log
+@Not done
+@
+text
+@a6 1
+
+a11 1
+
+d14 1
+a14 1
+	char *varName;
+d20 1
+a20 1
+		varName = readCMD_buf;
+d23 1
+a23 1
+	fgets(varValue, sizeof(input), stdin);
+d25 2
+a26 2
+	//printf("TEST readCMD varName = %s\n", varName);
+	//printf("TEST readCMD varValue = %s\n", varValue);
+d28 1
+a28 1
+	Table_add(varName, varValue);
+d34 10
+a43 5
+	char e[2] = "=";
+    char *varName;
+    char *varValue;
+    varName  = strtok(input,e);		//VARIABLE NAME IS STRING BEFORE "="
+    varValue = strtok(NULL,"\n");	//VARIABLE VALUE IS STRING AFTER "="
+d45 2
+a46 2
+    //printf("TEST equalCMD eBefore = %s\n", varName);
+    //printf("TEST equalCMD eAfter = %s\n", varValue);
+d48 1
+a48 1
+    Table_add(varName, varValue);
+d59 1
+a59 1
+			strcpy(varName, buf+1);
+d63 15
+a77 2
+	strcpy(input, varName);
+	return input;
+@
+
+
+6.1
+log
+@recommit
+@
+text
+@@
+

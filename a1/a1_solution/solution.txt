@@ -1,0 +1,128 @@
+Unfortunately I did the assignment in a few different sessions so I cannot 
+access the history of all the commands. However, the second half is as follows:
+
+
+lias mytars='ls -Fal ~/MAIN/tars | more'
+   90  create_tar:
+   91  create_ta():
+   92  create_ta()
+   93  create_tar() { cd ; tar czf ~/MAIN/tars/Martinez_Joe${1}.tar.z CSC60; }
+   94  create_tar a1
+   95  mytars
+   96  ls
+   97  cd MAIN
+   98  ls
+   99  cd tars
+  100  ls
+  101  cd -
+  102  ls
+  103  cd CSC60
+  104  ls
+  105  cd a1
+  106  ls
+  107  cd -
+  108  ls
+  109  cd -
+  110  ~/MAIN
+  111  ls
+  112  cd ~/MAIN
+  113  ls
+  114  cd tars
+  115  ls
+  116  vgi ~/.bashrc
+  117  vi ~/.bashrc
+  118  vi ~/.bashrc
+  119  unalias mytars
+  120  unset create_tar
+  121  ls
+  122  source ~/.bashrc
+  123  ls
+  124  cp ~/.bashrc ~/CSC60/a1
+  125  cp ~/.bashrc ~/MAIN/CSC60/a1
+  126  ls
+  127  cd ~/MAIN/CSC60
+  128  ls
+  129  cd a1
+  130  ls
+  131  ls -a ~/MAIN/CSC60/a1
+  132  cd ~/MAIN/CSC60
+  133  ls
+  134  cd a1
+  135  ls
+  136  mkdir a1_solution
+  137  ls
+  138  cd a1_solution
+  139  ls
+  140  vi solution.txt
+  141  history
+
+  205  hisry
+  206  history
+  207  vi solution
+  208  ls
+  209  vi solution.txt
+  210  ls
+  211  history
+  212  vi solution.txt
+  213     89  alias mytars='ls -Fal ~/MAIN/tars | more'
+  214     90  create_tar:
+  215     91  create_ta():
+  216     92  create_ta()
+  217     93  create_tar() { cd ; tar czf ~/MAIN/tars/Martinez_Joe${1}.tar.z CSC60; }
+  218     94  create_tar a1
+  219     95  mytars
+  220     96  ls
+  221     97  cd MAIN
+  222     98  ls
+  223     99  cd tars
+  224    100  ls
+  225    101  cd -
+  226    102  ls
+  227    103  cd CSC60
+  228    104  ls
+  229    105  cd a1
+  230    106  ls
+  231    107  cd -
+  232    108  ls
+  233    109  cd -
+  234    110  ~/MAIN
+  235    111  ls
+  236    112  cd ~/MAIN
+  237    113  ls
+  238    114  cd tars
+  239    115  ls
+  240    116  vgi ~/.bashrc
+  241    117  vi ~/.bashrc
+  242    118  vi ~/.bashrc
+  243    119  unalias mytars
+  244    120  unset create_tar
+  245    121  ls
+  246    122  source ~/.bashrc
+  247    123  ls
+  248    124  cp ~/.bashrc ~/CSC60/a1
+  249    125  cp ~/.bashrc ~/MAIN/CSC60/a1
+  250    126  ls
+  251    127  cd ~/MAIN/CSC60
+  252    128  ls
+  253    129  cd a1
+  254    130  ls
+  255    131  ls -a ~/MAIN/CSC60/a1
+  256    132  cd ~/MAIN/CSC60
+  257    133  ls
+  258    134  cd a1
+  259    135  ls
+  260    136  mkdir a1_solution
+  261    137  ls
+  262    138  cd a1_solution
+  263    139  ls
+  264    140  vi solution.txt
+  265    141  history
+  266    205  hisry
+  267    206  history
+  268    207  vi solution
+  269    208  ls
+  270    209  vi solution.txt
+  271    210  ls
+  272    211  history
+  273  history
+

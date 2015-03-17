@@ -1,0 +1,75 @@
+head	7.3;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+7.3
+date	2014.05.19.04.10.59;	author parallels;	state Exp;
+branches;
+next	7.1;
+commitid	10053798452137649CC;
+
+7.1
+date	2014.05.02.04.56.11;	author parallels;	state Exp;
+branches;
+next	6.1;
+commitid	1005363256B2C77085D;
+
+6.1
+date	2014.04.29.04.31.29;	author parallels;	state Exp;
+branches;
+next	;
+commitid	100535F2B2143F8CAA8;
+
+
+desc
+@@
+
+
+7.3
+log
+@Almost Done
+@
+text
+@//Programmer's name: Joe Martinez
+//shell_history.c holds the functions to deal with history file of the simple shell
+
+
+#include <stdio.h>
+#include <string.h>
+
+#include "shell.h"
+
+
+void headerTest(int j){
+	printf("%d\n", j);
+	printf("%s\n", "Test successful");
+}
+
+
+void recHistory(char input, int i /*FILE *shistory*/){
+	char c[16];
+    sprintf(c,"%d ", i);    //C IS A CHAR STRING WITH I AS A NUMERICAL MARK
+    i += 1;
+    //fputs(c, shistory);     //PUTS C INTO .SIMPLESHELL_HISTORY
+    //fputs(input, shistory); //PUTS INPUT (THE COMMAND) INTO .SIMPLESHELL_HISTORY
+}@
+
+
+7.1
+log
+@Not done
+@
+text
+@@
+
+
+6.1
+log
+@recommit
+@
+text
+@@
+

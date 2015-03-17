@@ -1,0 +1,141 @@
+head	7.3;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+7.3
+date	2014.05.19.04.10.59;	author parallels;	state Exp;
+branches;
+next	7.1;
+commitid	10053798452137649CC;
+
+7.1
+date	2014.05.02.04.56.11;	author parallels;	state Exp;
+branches;
+next	;
+commitid	1005363256B2C77085D;
+
+
+desc
+@@
+
+
+7.3
+log
+@Almost Done
+@
+text
+@//Programmer's name: Joe Martinez
+//record.c records input to key_logger when prompted 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h> 
+#include <time.h>
+#include <assert.h>
+#include <signal.h>
+#include "shell.h"
+
+
+void offHandler(int sig){
+	signal(SIGINT, offHandler);
+	printf("%s\n", "Key logging is now off"); 
+	printf("%s\n", "Would you like to append temporary record file to permanent record file? ");
+	printf("%s\n", "Enter Y/N");
+	char ans[4];
+	//Need to get input from pipe...
+	//fgets(ans, sizeof(ans), stdin);
+	if(strcmp(ans, "y")==0 | strcmp(ans, "Y")==0){
+		//append file
+		printf("%s\n", "File appended");
+	}
+	else{
+		//exit(1);
+		printf("%s\n", "File not appended");
+	}
+	//pause();         
+}
+
+
+int main(int argc, char *argv[]){
+	//signal(SIGINT, offHandler);
+    char recBuf[256];
+    int ret;
+    for(;;){
+    	ret = read(0, recBuf, 256);
+    	if(ret < 256){
+    		recBuf[ret] = '\0';
+    		//printf("%s\n", recBuf);
+    	}
+    	//printf("%s\n", recBuf);
+
+    	record(recBuf);
+	}
+	//printf("%s\n", argv[3]);
+	//record("");
+	return 0;	
+}
+
+
+void record(char *Buf){
+	FILE *temp_logger;
+	temp_logger = fopen(".temp_logger", "a");
+
+	printf("%s\n", "Line recorded...");
+
+	time_t time_stamp;
+	time(&time_stamp);
+	fputs(ctime(&time_stamp), temp_logger);
+	fputs("   ", temp_logger);
+	fputs(Buf,   temp_logger);
+	fputs("\n",  temp_logger);
+
+	fclose(temp_logger);
+}@
+
+
+7.1
+log
+@Not done
+@
+text
+@d8 4
+d13 18
+a30 1
+#include "shell.h"
+a31 1
+extern char *input;
+d33 11
+a43 1
+FILE *time_record;
+d45 1
+a45 6
+int main(void){
+	int i = 0;
+	while(i < 7){
+		printf("%s\n", "Record.c: Main while loop");
+		//printf("%s\n", input);
+		i++;
+d47 2
+a48 3
+	//char temp[16];
+	//fgets(temp, sizeof(temp), stdin);
+	record();
+d52 6
+a57 3
+void record(){
+	// FILE *time_record;
+	time_record = fopen(".logfile", "a");
+d61 6
+a66 7
+	//printf("%s\n", ctime(&time_stamp));
+	fputs(ctime(&time_stamp), time_record);
+	//fputs(stdin, time_record);
+
+	//stop when "Ctrl-D"
+	//executable file for record will go to bin subd	
+	fclose(time_record);
+@
+
